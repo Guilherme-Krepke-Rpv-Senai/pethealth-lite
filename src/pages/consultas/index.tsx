@@ -6,7 +6,15 @@ import { IoIosWarning } from "react-icons/io";
 import { FaTrashAlt } from "react-icons/fa";
 
 
-export function TaskMaster(){
+export function Consultas(){
+
+    return(
+        <>
+            <h1 className='text-4xl font-bold text-green-500 text-center'>CONSULTAS</h1>
+        </>
+    )
+}
+/*export function TaskMaster(){
     const formRules = z.object({
         taskTitle: z.string().min(5, 'Este campo é obrigatório e deve ter no mínimo 5 caracteres!').max(100, "Máximo de 100 caracteres!"),
         taskType: z.string().max(30, "Máximo de 30 caracteres!").transform((value) => value.trim() === "" ? "Sem Categoria" : value),
@@ -130,4 +138,4 @@ export function TaskMaster(){
         </div>
         </>
     )
-}
+}*/

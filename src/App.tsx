@@ -1,10 +1,9 @@
 import { BrowserRouter, Routes, Route, NavLink, useLocation} from 'react-router-dom'
-import { TaskMaster } from './pages/taskmaster'
 import { Home } from './pages/home'
-import { MoneyFlow } from './pages/moneyflow'
-import { ConnectHub } from './pages/connecthub'
+import { Pacientes } from './pages/pacientes'
+import { Consultas } from './pages/consultas'
+import { Listagem } from './pages/listagem'
 import { Header } from "./components/header"
-import { Footer } from './components/footer'
  
 export function App() {
 
@@ -13,11 +12,10 @@ export function App() {
             <Header/>
             <Routes>
                 <Route path='/' element={<Home />} />
-                <Route path='/taskmaster' element={<TaskMaster />} />
-                <Route path='/moneyflow' element={<MoneyFlow />} />
-                <Route path='/connecthub' element={<ConnectHub />} />
+                <Route path='/pacientes' element={<Pacientes />} />
+                <Route path='/consultas' element={<Consultas />} />
+                <Route path='/listagem' element={<Listagem />} />
             </Routes>
-            <Footer/>
         </BrowserRouter>
     )
 }

@@ -7,7 +7,16 @@ import { FaArrowUp, FaArrowDown } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
 
 
-export function MoneyFlow(){
+export function Pacientes(){
+
+    return(
+        <>
+            <h1 className='text-4xl font-bold text-green-500 text-center'>PACIENTES</h1>
+        </>
+    )
+}
+
+/*export function MoneyFlow(){
     const incomeRules = z.object({
         incomeValue: z.number("Valor de entrada inválido").positive("Valor de entrada inválido"),
         incomeDescription: z.string().transform((value) => value.trim() === "" ? "Transação Sem Descrição" : value)
@@ -171,4 +180,4 @@ export function MoneyFlow(){
             </div>
         </>
     )
-}
+}*/
