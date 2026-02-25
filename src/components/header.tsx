@@ -8,7 +8,7 @@ export function Header() {
     const currentPage = pathname
 
     const currentPageCSS = "text-green-600 font-semibold bg-green-200 rounded-xl py-1 px-7";
-    //ABC
+    
     return (
             <header className='fixed top-0 z-999 backdrop-blur-sm bg-white border border-[#e1e6eb] flex items-center justify-between p-5 px-30 w-full h-20'>
                 <NavLink to={'/'}>
