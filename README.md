@@ -1,8 +1,8 @@
 <<<<<<< HEAD
 ##Nomes
-= > Guilherme de Castro Krepke
+= > Guilherme
 = > Renan
-= > Arthur
+= > Artur
 = > Weislla
 = > Phillipe
 =======
