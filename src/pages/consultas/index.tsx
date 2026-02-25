@@ -1,141 +1,191 @@
-import { useState } from 'react'
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from 'zod'
-import { IoIosWarning } from "react-icons/io";
-import { FaTrashAlt } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { FaUserDoctor } from "react-icons/fa6";
+import { MdOutlineCalendarToday } from "react-icons/md";
 
+type Tarefa = {
+  id: string;
+  pet: string;
+};
 
-export function Consultas(){
+export function Consultas() {
+  const [pets, setPets] = useState<Tarefa[]>([]);
 
-    return(
-        <>
-            <h1 className='text-4xl font-bold text-green-500 text-center'>CONSULTAS</h1>
-        </>
-    )
-}
-/*export function TaskMaster(){
-    const formRules = z.object({
-        taskTitle: z.string().min(5, 'Este campo é obrigatório e deve ter no mínimo 5 caracteres!').max(100, "Máximo de 100 caracteres!"),
-        taskType: z.string().max(30, "Máximo de 30 caracteres!").transform((value) => value.trim() === "" ? "Sem Categoria" : value),
-        taskPriority: z.enum(["100", "75", "50", "25", "0"], {message: "Selecione uma prioridade válida!" })
-    })
+  useEffect(() => {
+    const petsSalvos = localStorage.getItem("Pets");
 
-    type ITaskForm = z.infer<typeof formRules>
-
-    type ITask = ITaskForm & {
-        taskId: string
+    if (petsSalvos) {
+      setPets(JSON.parse(petsSalvos));
     }
+  }, []);
 
-    const [allTasks, setTasks] = useState<ITask[]>([])
+  const formRules = z.object({
+    pet: z.string().min(1, "Selecione um pet!"),
+    date: z.string().min(1, "Selecione uma data!"),
+    schedule: z.string().min(1, "Selecione um horário!"),
+    reason: z
+      .string()
+      .min(5, "O motivo deve ter no mínimo 5 caracteres!")
+      .max(200, "Máximo de 200 caracteres!"),
+  });
 
-    function addTask(task: ITaskForm): void{
-        const {taskTitle, taskType, taskPriority} = task
+  type IAppointmentForm = z.infer<typeof formRules>;
 
-        const newTask: ITask = {
-            taskId: Math.random().toString(36).substring(2, 9),
-            taskTitle,
-            taskType,
-            taskPriority
-        }
+  const [allAppointments, setAppointment] = useState<IAppointmentForm[]>([]);
 
-        setTasks(oldState => [...oldState, newTask])
-    }
+  function addAppointment(appointment: IAppointmentForm): void {
+    setAppointment((oldState) => [...oldState, appointment]);
+  }
 
-    function deleteTask(taskId: string): void{
-        setTasks(oldState => 
-            oldState.filter(task => task.taskId !== taskId)
-        )
-    }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<IAppointmentForm>({
+    resolver: zodResolver(formRules),
+  });
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-        reset
-        } = useForm<ITaskForm>({
-        resolver: zodResolver(formRules),
-    })
+  function submitForm(data: IAppointmentForm) {
+    addAppointment(data);
+    reset();
+  }
 
-    function submitForm(data: ITaskForm) {
-        addTask(data)
-        reset()
-    }
+  useEffect(() => {
+    console.log("Lista de consultas atualizada:");
+    console.table(allAppointments);
+  }, [allAppointments]);
 
-    return (
-        <>
-        <div className="flex flex-col items-center justify-center gap-10">
-            <h1 className='text-4xl font-bold text-sky-500 text-center'>TASKMASTER</h1>
-
-            <form onSubmit={handleSubmit(submitForm)} className="flex flex-col items-end pt-10 gap-10">
-                <div className="flex gap-10">
-                    <div className="relative">
-                        <label htmlFor="taskTitle" className="absolute -top-5 left-3 text-[0.8rem]">Título</label>
-                        <input type="text" placeholder="..." id="taskTitle" {...register('taskTitle')} className="border bg-slate-800/80 border-slate-700 rounded-xl w-100 px-5 py-1 outline-0"/>
-                        {errors.taskTitle && <span className="absolute -bottom-4 left-2 text-red-700 text-[0.75rem]">{errors.taskTitle.message}</span>}
-                    </div>
-                    <div className="relative">
-                        <label htmlFor="taskType" className="absolute -top-5 left-3 text-[0.8rem]">Categoria</label>
-                        <input type="text" placeholder="..." id="taskType" {...register('taskType')} className="border bg-slate-800/80 border-slate-700 rounded-xl w-50 px-5 py-1 outline-0"/>
-                        {errors.taskType && <span className="absolute -bottom-4 left-2 text-red-700 text-[0.75rem]">{errors.taskType.message}</span>}
-                    </div>
-                    <div className="relative">
-                        <label htmlFor="taskPriority" className="absolute -top-5 left-3 text-[0.8rem]">Prioridade</label>
-                        <select id="taskPriority" {...register('taskPriority')} className="border bg-slate-800/80 border-slate-700 rounded-xl w-50 px-5 py-1">
-                            <option value="">Selecione</option>
-                            <option value="100">Emergência</option>
-                            <option value="75">Muita Urgência</option>
-                            <option value="50">Urgência</option>
-                            <option value="25">Pouca Urgência</option>
-                            <option value="0">Sem Urgência</option>
-                        </select>
-                        {errors.taskPriority && <span className="absolute -bottom-4 left-2 text-red-700 text-[0.75rem]">{errors.taskPriority.message}</span>}
-                    </div>
-                </div>
-
-                <div className="flex gap-6">
-                    <button className="border border-slate-700 rounded-xl px-5 py-1 cursor-pointer hover:text-green-400 hover:border-green-400 transition-all duration-100" type="submit">Enviar</button>
-                    <button className="border border-slate-700 rounded-xl px-5 py-1 cursor-pointer hover:text-red-500 hover:border-red-500 transition-all duration-100" type="reset" onClick={() => reset()}>Limpar</button>
-                </div>
-            </form>
-
-            <div className='relative w-220 flex flex-col gap-5 px-5'>
-                {
-                    allTasks.map((task) => {
-                        let priorityColor = ""
-
-                        if (task.taskPriority === "100") {
-                            priorityColor = "text-red-500"
-                        } else if (task.taskPriority === "75") {
-                            priorityColor = "text-orange-500"
-                        } else if (task.taskPriority === "50") {
-                            priorityColor = "text-yellow-500"
-                        } else if (task.taskPriority === "25") {
-                            priorityColor = "text-green-400"
-                        } else {
-                            priorityColor = "text-blue-400"
-                        }
-
-                        return (
-                            <li key={task.taskId} className='relative flex justify-between items-center w-full'>
-                                <span>{task.taskTitle}</span>
-                                <div className='flex gap-10 items-center'>
-                                    <span>{task.taskType}</span>
-                                    <div className='flex gap-5'>
-                                        <span className={`flex justify-center items-center border rounded-sm px-2 py-2 cursor-pointer ${priorityColor}`}>
-                                            <IoIosWarning/>
-                                        </span>
-                                        <span className="flex justify-center items-center border rounded-sm px-2 py-2 cursor-pointer text-red-500" onClick={() => deleteTask(task.taskId)}>
-                                            <FaTrashAlt/>
-                                        </span>
-                                    </div>
-                                </div>
-                            </li>
-                        )
-                    })
-                }
-            </div>
+  return (
+    <>
+      <div className="mt-30 flex flex-col items-center justify-center gap-15 scale-80">
+        <div className="bg-green-100 rounded-xl w-200 flex items-center gap-10 p-8">
+          <span className="scale-150 text-white bg-green-700 p-3 rounded-xl">
+            <FaUserDoctor />
+          </span>
+          <div className="text-left">
+            <p className="font-bold text-[1.5rem] text-black">Dr. Silva</p>
+            <p className="text-slate-500 text-[1.2rem]">
+              CRMV 12345 - Clínica Geral Veterinária
+            </p>
+          </div>
         </div>
-        </>
-    )
-}*/
+
+        <form
+          onSubmit={handleSubmit(submitForm)}
+          className="border border-slate-200 bg-white p-15 rounded-xl flex flex-col gap-15 items-center"
+        >
+          <span className="text-green-600 bg-green-100 rounded-xl scale-200 p-3 w-fit h-fit">
+            <MdOutlineCalendarToday />
+          </span>
+
+          <div className="flex flex-col gap-3">
+            <h1 className="text-4xl font-bold text-black text-center">
+              Agendar Consulta
+            </h1>
+            <h2 className="text-3xl text-slate-500 text-center">
+              Selecione o pet e preencha os detalhes da consulta
+            </h2>
+          </div>
+
+          <div className="relative w-full">
+            <label
+              htmlFor="inputPet"
+              className="font-bold text-[1.5rem] absolute left-5 -top-10"
+            >
+              Pet
+            </label>
+            <select
+              id="inputPet"
+              {...register("pet")}
+              className="w-full p-4 border border-slate-200 bg-slate-100 rounded-xl"
+            >
+              <option value="">Selecione o pet</option>
+              {pets.map((pets) => (
+                <div key={pets.id}>
+                  <option>{pets.pet}</option>
+                </div>
+              ))}
+            </select>
+            {errors.pet && (
+              <span className="absolute -bottom-6 left-2 text-red-700 text-[0.75rem]">
+                {errors.pet.message}
+              </span>
+            )}
+          </div>
+
+          <div className="relative w-full flex gap-5">
+            <div className="relative w-full">
+              <label
+                htmlFor="inputDate"
+                className="font-bold text-[1.5rem] absolute left-5 -top-10"
+              >
+                Data
+              </label>
+              <input
+                type="date"
+                id="inputDate"
+                {...register("date")}
+                className="p-4 border border-slate-200 bg-slate-100 rounded-xl w-full"
+              />
+              {errors.date && (
+                <span className="absolute -bottom-6 left-2 text-red-700 text-[0.75rem]">
+                  {errors.date.message}
+                </span>
+              )}
+            </div>
+
+            <div className="relative w-full">
+              <label
+                htmlFor="inputSchedule"
+                className="font-bold text-[1.5rem] absolute left-5 -top-10"
+              >
+                Horário
+              </label>
+              <input
+                type="time"
+                id="inputSchedule"
+                {...register("schedule")}
+                className="p-4 border border-slate-200 bg-slate-100 rounded-xl w-full"
+              />
+              {errors.schedule && (
+                <span className="absolute -bottom-6 left-2 text-red-700 text-[0.75rem]">
+                  {errors.schedule.message}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="relative w-full">
+            <label
+              htmlFor="inputReason"
+              className="font-bold text-[1.5rem] absolute left-5 -top-10"
+            >
+              Motivo
+            </label>
+            <textarea
+              id="inputReason"
+              placeholder="Descreva o motivo da consulta..."
+              {...register("reason")}
+              className="p-4 border border-slate-200 bg-slate-100 rounded-xl w-full"
+            />
+            {errors.reason && (
+              <span className="absolute -bottom-6 left-2 text-red-700 text-[0.75rem]">
+                {errors.reason.message}
+              </span>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="bg-green-700 w-full p-3 text-center rounded-xl text-white font-bold cursor-pointer"
+          >
+            Agendar
+          </button>
+        </form>
+      </div>
+    </>
+  );
+}
